@@ -22,7 +22,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "squashfuse.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <squashfuse.h>
 #include "fuseprivate.h"
 
 #include "nonstd.h"

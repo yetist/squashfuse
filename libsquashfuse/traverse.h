@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Dave Vasilevsky <dave@vasilevsky.ca>
+ * Copyright (c) 2014 Dave Vasilevsky <dave@vasilevsky.ca>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,48 +22,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef SQFS_COMMON_H
-#define SQFS_COMMON_H
+#ifndef SQFS_TRAVERSE_H
+#define SQFS_TRAVERSE_H
 
-#include "config.h"
-
-#include <stdbool.h>
-#include <stdint.h>
-#include <sys/types.h>
-
-#ifdef _WIN32
-	#include <win32.h>
-#else
-	typedef mode_t sqfs_mode_t;
-	typedef uid_t sqfs_id_t;
-	typedef off_t sqfs_off_t;
-	typedef int sqfs_fd_t;
-#endif
-
-typedef enum {
-	SQFS_OK,
-	SQFS_ERR,
-	SQFS_BADFORMAT,		/* unsupported file format */
-	SQFS_BADVERSION,	/* unsupported squashfs version */
-	SQFS_BADCOMP,		/* unsupported compression method */
-	SQFS_UNSUP			/* unsupported feature */
-} sqfs_err;
-
-#define SQFS_INODE_ID_BYTES 6
-typedef uint64_t sqfs_inode_id;
-typedef uint32_t sqfs_inode_num;
-
-typedef struct sqfs sqfs;
-typedef struct sqfs_inode sqfs_inode;
+#include <libsquashfuse/common.h>
+#include <libsquashfuse/dir.h>
+#include <libsquashfuse/stack.h>
 
 typedef struct {
-	size_t size;
-	void *data;
-} sqfs_block;
+	bool dir_end;
+	sqfs_dir_entry entry;
+	char *path;
+	
+	
+	/* private */
+	int state;	
+	sqfs *fs;
+	sqfs_name namebuf;
+	sqfs_stack stack;
+	
+	size_t path_size, path_cap;
+	size_t path_last_size;
+} sqfs_traverse;
 
-typedef struct {
-	sqfs_off_t block;
-	size_t offset;
-} sqfs_md_cursor;
+/* Begin a recursive traversal of a filesystem tree.
+   Every sub-item of the given inode will be traversed in-order, but not
+   this inode itself. */
+sqfs_err sqfs_traverse_open(sqfs_traverse *trv, sqfs *fs, sqfs_inode_id iid);
+sqfs_err sqfs_traverse_open_inode(sqfs_traverse *trv, sqfs *fs,
+	sqfs_inode *inode);
+
+/* Clean up at any point during or after a traversal */
+void sqfs_traverse_close(sqfs_traverse *trv);
+
+/* Get the next item in the traversal. An item may be:
+   - A directory entry, in which case trv->entry will be filled
+	 - A marker that a directory is finished, in which case trv->dir_end will
+     be true.
+   Returns false if there are no more items. */
+bool sqfs_traverse_next(sqfs_traverse *trv, sqfs_err *err);
+
+/* Don't recurse into the directory just returned. */
+sqfs_err sqfs_traverse_prune(sqfs_traverse *trv);
 
 #endif

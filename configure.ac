@@ -60,8 +60,12 @@ AM_CONDITIONAL([SQ_WANT_DEMO], [test "x$enable_demo" = xyes])
 AS_IF([test "x$enable_high_level$enable_low_level$enable_demo" = xnonono],
 	AC_MSG_FAILURE([Nothing left to build]))
 
+AC_CONFIG_FILES([
+Makefile
+libsquashfuse/Makefile
+demos/Makefile
+])
 
-AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 
 AS_ECHO()

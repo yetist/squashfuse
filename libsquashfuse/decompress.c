@@ -127,7 +127,6 @@ char *sqfs_compression_name(sqfs_compression_type type) {
 }
 
 void sqfs_compression_supported(sqfs_compression_type *types) {
-	size_t i = 0;
 	memset(types, SQFS_COMP_UNKNOWN, SQFS_COMP_MAX * sizeof(*types));
 #ifdef CAN_DECOMPRESS_LZO
 	types[i++] = LZO_COMPRESSION;

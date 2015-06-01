@@ -25,8 +25,7 @@
 #ifndef SQFS_UTIL_H
 #define SQFS_UTIL_H
 
-#include "common.h"
-
+#include <libsquashfuse/common.h>
 #include <stdio.h>
 
 /* Open a file, and optionally print a message on failure */

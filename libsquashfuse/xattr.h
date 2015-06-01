@@ -25,9 +25,8 @@
 #ifndef SQFS_XATTR_H
 #define SQFS_XATTR_H
 
-#include "common.h"
-
-#include "squashfs_fs.h"
+#include <libsquashfuse/common.h>
+#include <libsquashfuse/squashfs_fs.h>
 
 
 /* Initialize xattr handling for this fs */
